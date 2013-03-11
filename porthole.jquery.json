@@ -1,0 +1,37 @@
+{
+    "name": "porthole",
+    "title": "Simple viewport plugin",
+    "description": "jQuery plugin that provides viewport/porthole",
+    "keywords": [
+        "viewport",
+        "simple",
+        "image",
+        "ui",
+        "porthole",
+        "jquery"
+    ],
+    "version": "1.0.0",
+    "author": {
+        "name": "Mr. Fillo",
+        "url": "http://fillo.me/"
+    },
+    "maintainers": [
+        {
+            "name": "Mr. Fillo",
+            "email": "fillo@fillo.me",
+            "url": "http://fillo.me/"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "BSD",
+            "url": "https://github.com/DmitryPhilimonov/jquery.porthole/blob/master/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/DmitryPhilimonov/jquery.porthole/issues",
+    "docs": "http://dmitryphilimonov.github.com/jquery.porthole/",
+    "demo": "http://dmitryphilimonov.github.com/jquery.porthole/",
+    "dependencies": {
+        "jquery": "*"
+    }
+}
