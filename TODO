@@ -2,3 +2,4 @@
 -- Non-default scale webkit-only bug (Ctrl-+)
 -- Mobile version (viewport special page on click)
 -- Selectable css fix for imgs
+-- Allow updating viewport
