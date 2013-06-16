@@ -1,3 +1,4 @@
 -- The ability to add multiple windows on the page (move $.portholeWrapper and $.portholeStatus to context obj)
 -- Non-default scale webkit-only bug (Ctrl-+)
 -- Mobile version (viewport special page on click)
+-- Selectable css fix for imgs
