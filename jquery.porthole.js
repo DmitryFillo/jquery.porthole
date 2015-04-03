@@ -1,119 +1,103 @@
 /*
     Simple Viewport Plugin
-    Version: 1.0.0
+    Version: 2.0.0
 
-    It is licensed under BSD Licence.
-    The license text can be found at https://github.com/DmitryPhilimonov/jquery.porthole/blob/master/LICENSE
-
-    Author: Mr. Fillo
-	    fillo at fillo dot me
-
-    Website: http://plugins.jquery.com/porthole/
+    https://github.com/DmitryFillo/jquery.porthole
 */
 
 (function($) {
     'use strict';
-
     $.fn.porthole = function(options) {
-
-	// Do nothing if viewport already on.
-	if($.portholeStatus == undefined) {
-	    $.portholeStatus = true;
-	} else {
-	    return false;
-	}
-
-	// Extending options.
-	var options = $.extend({
-	    start: [0, 0],
-	    callback: undefined }, options);
-	options.start = options.start.map(function(p) { return -p });
-
-	// Wrapper id.
-	var wrapper_id = $(this).attr('id') + '-porthole-wrapper';
-
-	// Wrapper prototype object (to wrap content in div).
-	var wrapper_proto = {
-
-	    // Max pos.
-	    maxPos : [ ],
-
-	    // Current pos.
-	    curPos : [ ],
-
-	    // Get position.
-	    getPos : function(s) {
-		var position = [
-		    $(s).css('left'),
-		    $(s).css('top')
-		].map(function(str) { return str.replace(/px/g, '') });
-
-		return [ parseInt(position[0]), parseInt(position[1]) ];
-	    },
-
-	    // Set position.
-	    setPos : function(s, left, top) {
-		left = left > 0 ? 0 : left;
-		top = top > 0 ? 0 : top;
-		left = left < this.maxPos[0] ? this.maxPos[0] : left;
-		top = top < this.maxPos[1] ? this.maxPos[1] : top;
-
-		$(s).css({'left' : left +'px', 'top' : top +'px'});
-	    }
-	};
-
-	// Constructor for wrapper object.
-	function Wrapper(viewport, wrapper) {
-	    this.maxPos = [
-		$(viewport).width()-$(wrapper).width(),
-		$(viewport).height()-$(wrapper).height()
-	    ];
-	    this.curPos = this.getPos(wrapper);
-	}
-
-	Wrapper.prototype = wrapper_proto;
-
-	// Dragging event handlers.
-	var dragging = false;
-
-	$(this).mousedown(function(e) {
-	    dragging = true;
-
-	    var x = e.pageX,
-		y = e.pageY,
-                handler = function(e) {
-            	    $.portholeWrapper.setPos('#'+wrapper_id, (e.pageX-x)+$.portholeWrapper.curPos[0], (e.pageY-y)+$.portholeWrapper.curPos[1]);
-            	}
-
-	    // Throttling.
-	    if($.throttle) {
-		$(document).mousemove($.throttle(20, true, handler));
-	    } else {
-		$(document).mousemove(handler);
-	    }
-
-          });
-
-	$(document).mouseup(function() {
-	    if(dragging == true) {
-		dragging = false;
-		$(document).unbind("mousemove");
-		$.portholeWrapper.curPos = $.portholeWrapper.getPos('#'+wrapper_id);
-	    } else {
-		return false;
-	    }
-	});
-
-	// Add wrapper to html and run callback.
-	$(this)
-	    .css({'display' : 'none', 'overflow' : 'hidden'})
-	    .html('<div id="'+ wrapper_id +'" style="display: inline-block; position: relative; left: '+ options.start[0] +'px; top: '+ options.start[1] +'px;">'+ $(this).html() +'</div>')
-	    .show(0, function() {
-		$.portholeWrapper = new Wrapper(this, '#'+wrapper_id);
-		if(options.callback != undefined) {
-		    options.callback();
-		};
-	    });
+        var viewport = this,
+            Porthole = function() {
+                options = $.extend({
+                    start: [0, 0],
+                    callback: undefined
+                }, options);
+                this.init();
+            };
+        Porthole.prototype = {
+            init : function() {
+                if(typeof this.initialized === 'undefined') {
+                    this.$viewport = $(viewport);
+                    this.render();
+                    this.posInit();
+                    this.eventsBind();
+                    options.callback(this);
+                    this.initialized = true;
+                };
+            },
+            destroy : function() {
+                if(this.initialized === true) {
+                    this.eventsUnbind();
+                    this.renderBack();
+                    this.initialized = undefined;
+                };
+            },
+            update : function() {
+                this.destroy();
+                this.init();
+            },
+            render : function() {
+                if(typeof this.container === 'undefined') {
+                    this.container = this.$viewport.attr('id')+'-porthole-wrapper'
+                    this.$container = $('<div id="'+this.container+'" style="display: inline-block;">'+this.$viewport.html()+'</div>');
+                    this.viewportOverflow = this.$viewport.css('overflow');
+                    this.$viewport.css('overflow', 'hidden').html(this.$container);
+                };
+            },
+            renderBack : function() {
+                if(typeof this.container !== 'undefined') {
+                    this.$viewport.html(this.$container.html()).css('overflow', this.viewportOverflow);
+                    this.container = undefined;
+                    this.$container = undefined;
+                    this.viewportOverflow = undefined;
+                };
+            },
+            posInit : function() {
+                this.posCur = [-options.start[0], -options.start[1]];
+                this.posMax = [this.$viewport.width()-this.$container.width(), this.$viewport.height()-this.$container.height()];
+                this.posSet(this.posCur[0], this.posCur[1]);
+            },
+            posGet : function() {
+                return this.$container.css('transform').split(', ').slice(-2).map(function(i) { return parseInt(i); });
+            },
+            posSet : function(left, top) {
+                left = left > 0 ? 0 : left;
+                top = top > 0 ? 0 : top;
+                left = left < this.posMax[0] ? this.posMax[0] : left;
+                top = top < this.posMax[1] ? this.posMax[1] : top;
+                this.$container.css('transform', 'translate3d('+left+'px, '+top+'px, 0px)');
+            },
+            eventMousedown : function(e) {
+                this.dragging = true;
+                var x = e.pageX,
+                    y = e.pageY,
+                    _this = this,
+                    handler = function(e) { this.posSet((e.pageX-x)+this.posCur[0], (e.pageY-y)+this.posCur[1]); };
+                if($.throttle) {
+                    $(document).on('mousemove.'+this.container, $.throttle(20, true, function(e) { handler.call(_this, e); }));
+                } else {
+                    $(document).on('mousemove.'+this.container, function(e) { handler.call(_this, e); });
+                }
+            },
+            eventMouseup : function() {
+                if(this.dragging === true) {
+                    this.dragging = false;
+                    this.posCur = this.posGet();
+                    $(document).off('mousemove.'+this.container);
+                }
+            },
+            eventsBind : function() {
+                var _this = this;
+                this.$container.on('mousedown.'+this.container, function(e) { _this.eventMousedown(e); });
+                $(document).on('mouseup.'+this.container, function() { _this.eventMouseup(); });
+            },
+            eventsUnbind : function() {
+                this.$container.off('mousedown.'+this.container);
+                $(document).off('mouseup.'+this.container).off('mousemove.'+this.container);
+            }
+        };
+        return new Porthole();
     };
-
 })(jQuery);
