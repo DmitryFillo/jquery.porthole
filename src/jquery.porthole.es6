@@ -3,27 +3,27 @@ import jQuery from 'jquery';
 class Porthole {
 
     constructor(options, viewport) {
-        this.options = options;
-        this.viewport = viewport;
+        this._options = options;
+        this._viewport = viewport;
+        this._initialized = false;
         this.init();
     }
 
     init() {
-        if(typeof this.initialized === 'undefined') {
-            this.$viewport = jQuery(this.viewport);
-            this.render();
-            this.posInit();
-            this.eventsBind();
-            this.options.callback(this);
-            this.initialized = true;
+        if(this._initialized === false) {
+            this._initialized = true;
+            this._render();
+            this._posInit();
+            this._eventsBind();
+            this._options.callback(this);
         };
     }
 
     destroy() {
-        if(this.initialized === true) {
-            this.eventsUnbind();
-            this.renderBack();
-            this.initialized = undefined;
+        if(this._initialized === true) {
+            this._initialized = false;
+            this._eventsUnbind();
+            this._renderBack();
         };
     }
 
@@ -32,40 +32,55 @@ class Porthole {
         this.init();
     }
 
-    render() {
-        if(typeof this.container === 'undefined') {
-            this.container = this.$viewport.attr('id')+'-porthole-wrapper'
-            this.$container = jQuery('<div id="'+this.container+'" style="display: inline-block;">'+this.$viewport.html()+'</div>');
-            this.viewportOverflow = this.$viewport.css('overflow');
-            this.$viewport.css('overflow', 'hidden').html(this.$container);
+    _render() {
+        if(this._container == undefined) {
+            this._$viewport = jQuery(this._viewport);
+            this._container = this._$viewport.attr('id')+'-porthole-wrapper'
+            this._$container = jQuery('<div id="'+this._container+'" style="display: inline-block;">'+this._$viewport.html()+'</div>');
+            this._viewportOverflow = this._$viewport.css('overflow');
+            this._$viewport.css('overflow', 'hidden').html(this._$container);
         };
     }
 
-    renderBack() {
-        if(typeof this.container !== 'undefined') {
-            this.$viewport.html(this.$container.html()).css('overflow', this.viewportOverflow);
-            this.container = undefined;
-            this.$container = undefined;
-            this.viewportOverflow = undefined;
+    _renderBack() {
+        if(this._container != undefined) {
+            this._$viewport.html(this._$container.html()).css('overflow', this._containerviewportOverflow);
+            this._container = null;
+            this._$container = null;
+            this._viewportOverflow = null;
         };
     }
 
-    posInit() {
-        this.posCur = [-this.options.start[0], -this.options.start[1]];
-        this.posMax = [this.$viewport.width()-this.$container.width(), this.$viewport.height()-this.$container.height()];
-        this.posSet(this.posCur[0], this.posCur[1]);
+    _posInit() {
+        this.posMax = {
+            left : this._$viewport.width()-this._$container.width(),
+            top : this._$viewport.height()-this._$container.height()
+        }
+        this.posCur = {
+            left : -this._options.start[0], 
+            top : -this._options.start[1]
+        }
+        this._posSet(this.posCur)
     }
 
-    posGet() {
-        return this.$container.css('transform').split(', ').slice(-2).map(i => { return parseInt(i); });
+    _posGet() {
+        var a = [ for (i of this._$container.css('transform').split(', ').slice(-2)) parseInt(i) ],
+            [left, top] = a;
+
+        return {
+            left : left,
+            top : top
+        }
     }
 
-    posSet(left, top) {
+    _posSet({left, top}) {
+        var { left: leftMax, top: topMax } = this.posMax;
+
         left = left > 0 ? 0 : left;
         top = top > 0 ? 0 : top;
-        left = left < this.posMax[0] ? this.posMax[0] : left;
-        top = top < this.posMax[1] ? this.posMax[1] : top;
-        this.$container.css('transform', 'translate3d('+left+'px, '+top+'px, 0px)');
+        left = left < leftMax ? leftMax : left;
+        top = top < topMax ? topMax : top;
+        this._$container.css('transform', 'translate3d('+left+'px, '+top+'px, 0px)');
     }
 
     _getXY(e) {
@@ -74,47 +89,53 @@ class Porthole {
         return [x, y]
     }
 
-    eventMousedown(e) {
+    _eventMousedown(e) {
         this.dragging = true;
         var [x, y] = this._getXY(e);
         jQuery(document).on(
-            'touchmove.'+this.container+
-            ' mousemove.'+this.container,
+            'touchmove.'+this._container+
+            ' mousemove.'+this._container,
             e => {
                 var [xx, yy] = this._getXY(e);
-                this.posSet(xx-x+this.posCur[0], yy-y+this.posCur[1]);
+                this._posSet({
+                    left : xx-x+this.posCur['left'], 
+                    top : yy-y+this.posCur['top']
+                });
             }
         );
     }
 
-    eventMouseup() {
+    _eventMouseup() {
         if(this.dragging === true) {
             this.dragging = false;
-            this.posCur = this.posGet();
-            jQuery(document).off('.'+this.container);
+            this.posCur = this._posGet();
+            jQuery(document).off(
+                'touchmove.'+this._container+
+                ' mousemove.'+this._container
+            );
         }
     }
 
-    eventsBind() {
-        this.$container.on(
-            'touchstart.'+this.container+
-            ' mousedown.'+this.container,
+    _eventsBind() {
+        this._$container.on(
+            'touchstart.'+this._container+
+            ' mousedown.'+this._container,
             e => {
-                this.eventMousedown(e);
+                this._eventMousedown(e);
             }
         );
         jQuery(document).on(
-            'touchend.'+this.container+
-            ' mouseup.'+this.container, 
+            'touchend.'+this._container+
+            ' mouseup.'+this._container, 
             () => {
-                this.eventMouseup();
+                this._eventMouseup();
             }
         );
     }
 
-    eventsUnbind() {
-        this.$container.off('.'+this.container);
-        jQuery(document).off('.'+this.container);
+    _eventsUnbind() {
+        this._$container.off('.'+this._container);
+        jQuery(document).off('.'+this._container);
     }
 }
 

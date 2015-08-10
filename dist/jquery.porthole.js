@@ -27,30 +27,30 @@
         function Porthole(options, viewport) {
             _classCallCheck(this, Porthole);
 
-            this.options = options;
-            this.viewport = viewport;
+            this._options = options;
+            this._viewport = viewport;
+            this._initialized = false;
             this.init();
         }
 
         _createClass(Porthole, [{
             key: 'init',
             value: function init() {
-                if (typeof this.initialized === 'undefined') {
-                    this.$viewport = (0, _jQuery['default'])(this.viewport);
-                    this.render();
-                    this.posInit();
-                    this.eventsBind();
-                    this.options.callback(this);
-                    this.initialized = true;
+                if (this._initialized === false) {
+                    this._initialized = true;
+                    this._render();
+                    this._posInit();
+                    this._eventsBind();
+                    this._options.callback(this);
                 };
             }
         }, {
             key: 'destroy',
             value: function destroy() {
-                if (this.initialized === true) {
-                    this.eventsUnbind();
-                    this.renderBack();
-                    this.initialized = undefined;
+                if (this._initialized === true) {
+                    this._initialized = false;
+                    this._eventsUnbind();
+                    this._renderBack();
                 };
             }
         }, {
@@ -60,47 +60,98 @@
                 this.init();
             }
         }, {
-            key: 'render',
-            value: function render() {
-                if (typeof this.container === 'undefined') {
-                    this.container = this.$viewport.attr('id') + '-porthole-wrapper';
-                    this.$container = (0, _jQuery['default'])('<div id="' + this.container + '" style="display: inline-block;">' + this.$viewport.html() + '</div>');
-                    this.viewportOverflow = this.$viewport.css('overflow');
-                    this.$viewport.css('overflow', 'hidden').html(this.$container);
+            key: '_render',
+            value: function _render() {
+                if (this._container == undefined) {
+                    this._$viewport = (0, _jQuery['default'])(this._viewport);
+                    this._container = this._$viewport.attr('id') + '-porthole-wrapper';
+                    this._$container = (0, _jQuery['default'])('<div id="' + this._container + '" style="display: inline-block;">' + this._$viewport.html() + '</div>');
+                    this._viewportOverflow = this._$viewport.css('overflow');
+                    this._$viewport.css('overflow', 'hidden').html(this._$container);
                 };
             }
         }, {
-            key: 'renderBack',
-            value: function renderBack() {
-                if (typeof this.container !== 'undefined') {
-                    this.$viewport.html(this.$container.html()).css('overflow', this.viewportOverflow);
-                    this.container = undefined;
-                    this.$container = undefined;
-                    this.viewportOverflow = undefined;
+            key: '_renderBack',
+            value: function _renderBack() {
+                if (this._container != undefined) {
+                    this._$viewport.html(this._$container.html()).css('overflow', this._containerviewportOverflow);
+                    this._container = null;
+                    this._$container = null;
+                    this._viewportOverflow = null;
                 };
             }
         }, {
-            key: 'posInit',
-            value: function posInit() {
-                this.posCur = [-this.options.start[0], -this.options.start[1]];
-                this.posMax = [this.$viewport.width() - this.$container.width(), this.$viewport.height() - this.$container.height()];
-                this.posSet(this.posCur[0], this.posCur[1]);
+            key: '_posInit',
+            value: function _posInit() {
+                this.posMax = {
+                    left: this._$viewport.width() - this._$container.width(),
+                    top: this._$viewport.height() - this._$container.height()
+                };
+                this.posCur = {
+                    left: -this._options.start[0],
+                    top: -this._options.start[1]
+                };
+                this._posSet(this.posCur);
             }
         }, {
-            key: 'posGet',
-            value: function posGet() {
-                return this.$container.css('transform').split(', ').slice(-2).map(function (i) {
-                    return parseInt(i);
-                });
+            key: '_posGet',
+            value: function _posGet() {
+                var _this = this;
+
+                var a = (function () {
+                    var _a = [];
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                        for (var _iterator = _this._$container.css('transform').split(', ').slice(-2)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var i = _step.value;
+
+                            _a.push(parseInt(i));
+                        }
+                    } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion && _iterator['return']) {
+                                _iterator['return']();
+                            }
+                        } finally {
+                            if (_didIteratorError) {
+                                throw _iteratorError;
+                            }
+                        }
+                    }
+
+                    return _a;
+                })();
+
+                var _a2 = _slicedToArray(a, 2);
+
+                var left = _a2[0];
+                var top = _a2[1];
+
+                return {
+                    left: left,
+                    top: top
+                };
             }
         }, {
-            key: 'posSet',
-            value: function posSet(left, top) {
+            key: '_posSet',
+            value: function _posSet(_ref) {
+                var left = _ref.left;
+                var top = _ref.top;
+                var _posMax = this.posMax;
+                var leftMax = _posMax.left;
+                var topMax = _posMax.top;
+
                 left = left > 0 ? 0 : left;
                 top = top > 0 ? 0 : top;
-                left = left < this.posMax[0] ? this.posMax[0] : left;
-                top = top < this.posMax[1] ? this.posMax[1] : top;
-                this.$container.css('transform', 'translate3d(' + left + 'px, ' + top + 'px, 0px)');
+                left = left < leftMax ? leftMax : left;
+                top = top < topMax ? topMax : top;
+                this._$container.css('transform', 'translate3d(' + left + 'px, ' + top + 'px, 0px)');
             }
         }, {
             key: '_getXY',
@@ -110,9 +161,9 @@
                 return [x, y];
             }
         }, {
-            key: 'eventMousedown',
-            value: function eventMousedown(e) {
-                var _this = this;
+            key: '_eventMousedown',
+            value: function _eventMousedown(e) {
+                var _this2 = this;
 
                 this.dragging = true;
 
@@ -123,43 +174,46 @@
                 var x = _getXY22[0];
                 var y = _getXY22[1];
 
-                (0, _jQuery['default'])(document).on('touchmove.' + this.container + ' mousemove.' + this.container, function (e) {
-                    var _getXY3 = _this._getXY(e);
+                (0, _jQuery['default'])(document).on('touchmove.' + this._container + ' mousemove.' + this._container, function (e) {
+                    var _getXY3 = _this2._getXY(e);
 
                     var _getXY32 = _slicedToArray(_getXY3, 2);
 
                     var xx = _getXY32[0];
                     var yy = _getXY32[1];
 
-                    _this.posSet(xx - x + _this.posCur[0], yy - y + _this.posCur[1]);
+                    _this2._posSet({
+                        left: xx - x + _this2.posCur['left'],
+                        top: yy - y + _this2.posCur['top']
+                    });
                 });
             }
         }, {
-            key: 'eventMouseup',
-            value: function eventMouseup() {
+            key: '_eventMouseup',
+            value: function _eventMouseup() {
                 if (this.dragging === true) {
                     this.dragging = false;
-                    this.posCur = this.posGet();
-                    (0, _jQuery['default'])(document).off('.' + this.container);
+                    this.posCur = this._posGet();
+                    (0, _jQuery['default'])(document).off('touchmove.' + this._container + ' mousemove.' + this._container);
                 }
             }
         }, {
-            key: 'eventsBind',
-            value: function eventsBind() {
-                var _this2 = this;
+            key: '_eventsBind',
+            value: function _eventsBind() {
+                var _this3 = this;
 
-                this.$container.on('touchstart.' + this.container + ' mousedown.' + this.container, function (e) {
-                    _this2.eventMousedown(e);
+                this._$container.on('touchstart.' + this._container + ' mousedown.' + this._container, function (e) {
+                    _this3._eventMousedown(e);
                 });
-                (0, _jQuery['default'])(document).on('touchend.' + this.container + ' mouseup.' + this.container, function () {
-                    _this2.eventMouseup();
+                (0, _jQuery['default'])(document).on('touchend.' + this._container + ' mouseup.' + this._container, function () {
+                    _this3._eventMouseup();
                 });
             }
         }, {
-            key: 'eventsUnbind',
-            value: function eventsUnbind() {
-                this.$container.off('.' + this.container);
-                (0, _jQuery['default'])(document).off('.' + this.container);
+            key: '_eventsUnbind',
+            value: function _eventsUnbind() {
+                this._$container.off('.' + this._container);
+                (0, _jQuery['default'])(document).off('.' + this._container);
             }
         }]);
 
