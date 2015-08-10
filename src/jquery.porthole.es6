@@ -15,7 +15,6 @@ class Porthole {
             this._render();
             this._posInit();
             this._eventsBind();
-            this._options.callback(this);
         };
     }
 
@@ -141,8 +140,7 @@ class Porthole {
 
 jQuery.fn.porthole = function(options) {
     options = jQuery.extend({
-        start: [0, 0],
-        callback: undefined
+        start: [0, 0]
     }, options);
 
     return new Porthole(options, this);

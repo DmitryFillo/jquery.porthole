@@ -41,7 +41,6 @@
                     this._render();
                     this._posInit();
                     this._eventsBind();
-                    this._options.callback(this);
                 };
             }
         }, {
@@ -222,8 +221,7 @@
 
     _jQuery['default'].fn.porthole = function (options) {
         options = _jQuery['default'].extend({
-            start: [0, 0],
-            callback: undefined
+            start: [0, 0]
         }, options);
 
         return new Porthole(options, this);
