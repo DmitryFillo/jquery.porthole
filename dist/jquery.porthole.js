@@ -13,6 +13,8 @@
 })(this, function (exports, _jquery) {
     'use strict';
 
+    var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
     function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -101,25 +103,36 @@
                 this.$container.css('transform', 'translate3d(' + left + 'px, ' + top + 'px, 0px)');
             }
         }, {
+            key: '_getXY',
+            value: function _getXY(e) {
+                var x = e.pageX || e.originalEvent.touches[0].pageX,
+                    y = e.pageY || e.originalEvent.touches[0].pageY;
+                return [x, y];
+            }
+        }, {
             key: 'eventMousedown',
             value: function eventMousedown(e) {
                 var _this = this;
 
                 this.dragging = true;
-                var x = e.pageX,
-                    y = e.pageY,
-                    handler = function handler(e) {
-                    _this.posSet(e.pageX - x + _this.posCur[0], e.pageY - y + _this.posCur[1]);
-                };
-                if ($.throttle) {
-                    (0, _jQuery['default'])(document).on('mousemove.' + this.container, $.throttle(20, true, function (e) {
-                        handler(e);
-                    }));
-                } else {
-                    (0, _jQuery['default'])(document).on('mousemove.' + this.container, function (e) {
-                        handler(e);
-                    });
-                }
+
+                var _getXY2 = this._getXY(e);
+
+                var _getXY22 = _slicedToArray(_getXY2, 2);
+
+                var x = _getXY22[0];
+                var y = _getXY22[1];
+
+                (0, _jQuery['default'])(document).on('touchmove.' + this.container + ' mousemove.' + this.container, function (e) {
+                    var _getXY3 = _this._getXY(e);
+
+                    var _getXY32 = _slicedToArray(_getXY3, 2);
+
+                    var xx = _getXY32[0];
+                    var yy = _getXY32[1];
+
+                    _this.posSet(xx - x + _this.posCur[0], yy - y + _this.posCur[1]);
+                });
             }
         }, {
             key: 'eventMouseup',
@@ -127,7 +140,7 @@
                 if (this.dragging === true) {
                     this.dragging = false;
                     this.posCur = this.posGet();
-                    (0, _jQuery['default'])(document).off('mousemove.' + this.container);
+                    (0, _jQuery['default'])(document).off('.' + this.container);
                 }
             }
         }, {
@@ -135,18 +148,18 @@
             value: function eventsBind() {
                 var _this2 = this;
 
-                this.$container.on('mousedown.' + this.container, function (e) {
+                this.$container.on('touchstart.' + this.container + ' mousedown.' + this.container, function (e) {
                     _this2.eventMousedown(e);
                 });
-                (0, _jQuery['default'])(document).on('mouseup.' + this.container, function () {
+                (0, _jQuery['default'])(document).on('touchend.' + this.container + ' mouseup.' + this.container, function () {
                     _this2.eventMouseup();
                 });
             }
         }, {
             key: 'eventsUnbind',
             value: function eventsUnbind() {
-                this.$container.off('mousedown.' + this.container);
-                (0, _jQuery['default'])(document).off('mouseup.' + this.container).off('mousemove.' + this.container);
+                this.$container.off('.' + this.container);
+                (0, _jQuery['default'])(document).off('.' + this.container);
             }
         }]);
 

@@ -68,34 +68,53 @@ class Porthole {
         this.$container.css('transform', 'translate3d('+left+'px, '+top+'px, 0px)');
     }
 
+    _getXY(e) {
+        var x = e.pageX || e.originalEvent.touches[0].pageX,
+            y = e.pageY || e.originalEvent.touches[0].pageY;
+        return [x, y]
+    }
+
     eventMousedown(e) {
         this.dragging = true;
-        var x = e.pageX,
-            y = e.pageY,
-            handler = e => { this.posSet((e.pageX-x)+this.posCur[0], (e.pageY-y)+this.posCur[1]); };
-        if($.throttle) {
-            jQuery(document).on('mousemove.'+this.container, $.throttle(20, true, function(e) { handler(e); }));
-        } else {
-            jQuery(document).on('mousemove.'+this.container, function(e) { handler(e); });
-        }
+        var [x, y] = this._getXY(e);
+        jQuery(document).on(
+            'touchmove.'+this.container+
+            ' mousemove.'+this.container,
+            e => {
+                var [xx, yy] = this._getXY(e);
+                this.posSet(xx-x+this.posCur[0], yy-y+this.posCur[1]);
+            }
+        );
     }
 
     eventMouseup() {
         if(this.dragging === true) {
             this.dragging = false;
             this.posCur = this.posGet();
-            jQuery(document).off('mousemove.'+this.container);
+            jQuery(document).off('.'+this.container);
         }
     }
 
     eventsBind() {
-        this.$container.on('mousedown.'+this.container, e => { this.eventMousedown(e); });
-        jQuery(document).on('mouseup.'+this.container, () => { this.eventMouseup(); });
+        this.$container.on(
+            'touchstart.'+this.container+
+            ' mousedown.'+this.container,
+            e => {
+                this.eventMousedown(e);
+            }
+        );
+        jQuery(document).on(
+            'touchend.'+this.container+
+            ' mouseup.'+this.container, 
+            () => {
+                this.eventMouseup();
+            }
+        );
     }
 
     eventsUnbind() {
-        this.$container.off('mousedown.'+this.container);
-        jQuery(document).off('mouseup.'+this.container).off('mousemove.'+this.container);
+        this.$container.off('.'+this.container);
+        jQuery(document).off('.'+this.container);
     }
 }
 
