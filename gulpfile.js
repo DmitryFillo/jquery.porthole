@@ -2,33 +2,35 @@ var gulp = require('gulp');
 var babel = require('gulp-babel');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
-var watch = require('gulp-watch');
 
-gulp.task('default', function () {
-    return gulp.src('src/jquery.porthole.es6')
-        .pipe(babel({
-            modules : 'umd'
-        }))
-        .pipe(gulp.dest('dist'));
-});
+var babelConf = {
+    modules : 'umd',
+    optional : 'es7.comprehensions'
+}
 
+var srcDir = 'src'
+var distDir = 'dist'
 
-gulp.task('watch', function () {
-    watch('src/jquery.porthole.es6', function() {
-        return gulp.src('src/jquery.porthole.es6')
-            .pipe(babel({
-                modules : 'umd'
-            }))
-            .pipe(gulp.dest('dist'));
-    });
+var baseFile = 'jquery.porthole'
+var srcFile = baseFile+'.es6'
+var distFile = baseFile+'.js'
+var minFile = baseFile+'.min.js'
+
+gulp.task('compile', function () {
+    gulp.src(srcDir+'/'+srcFile)
+        .pipe(babel(babelConf))
+        .pipe(gulp.dest(distDir));
 });
 
 gulp.task('compress', function () {
-    return gulp.src('src/jquery.porthole.es6')
-        .pipe(babel({
-            modules : 'umd'
-        }))
+    gulp.src(distDir+'/'+distFile)
         .pipe(uglify())
-        .pipe(rename('jquery.porthole.min.js'))
-        .pipe(gulp.dest('dist'));
+        .pipe(rename(minFile))
+        .pipe(gulp.dest(distDir));
+});
+
+gulp.task('default', ['compile', 'compress']);
+
+gulp.task('watch', function() {
+    gulp.watch(srcDir+'/**', ['compile']);
 });
