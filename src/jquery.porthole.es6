@@ -1,12 +1,20 @@
 import jQuery from 'jquery';
 
-class Porthole {
+export class Porthole {
 
-    constructor(options, viewport) {
+    constructor(viewport, options) {
         this._options = options;
         this._viewport = viewport;
         this._initialized = false;
         this.init();
+    }
+
+    getCurrentPos() {
+        return this._posCur;
+    }
+
+    getInitializedStatus() {
+        return this._initialized;
     }
 
     init() {
@@ -32,9 +40,9 @@ class Porthole {
     }
 
     _render() {
-        if(this._container == undefined) {
+        if(typeof this._container === 'undefined') {
             this._$viewport = jQuery(this._viewport);
-            this._container = this._$viewport.attr('id')+'-porthole-wrapper'
+            this._container = this._$viewport.attr('id')+'-jquery-porthole-wrapper'
             this._$container = jQuery('<div id="'+this._container+'" style="display: inline-block;">'+this._$viewport.html()+'</div>');
             this._viewportOverflow = this._$viewport.css('overflow');
             this._$viewport.css('overflow', 'hidden').html(this._$container);
@@ -42,8 +50,8 @@ class Porthole {
     }
 
     _renderBack() {
-        if(this._container != undefined) {
-            this._$viewport.html(this._$container.html()).css('overflow', this._containerviewportOverflow);
+        if(typeof this._container !== 'undefined') {
+            this._$viewport.html(this._$container.html()).css('overflow', this._viewportOverflow);
             this._container = null;
             this._$container = null;
             this._viewportOverflow = null;
@@ -51,15 +59,15 @@ class Porthole {
     }
 
     _posInit() {
-        this.posMax = {
+        this._posMax = {
             left : this._$viewport.width()-this._$container.width(),
             top : this._$viewport.height()-this._$container.height()
-        }
-        this.posCur = {
+        };
+        this._posCur = {
             left : -this._options.start[0], 
             top : -this._options.start[1]
-        }
-        this._posSet(this.posCur)
+        };
+        this._posSet(this._posCur);
     }
 
     _posGet() {
@@ -73,12 +81,13 @@ class Porthole {
     }
 
     _posSet({left, top}) {
-        var { left: leftMax, top: topMax } = this.posMax;
+        var { left: leftMax, top: topMax } = this._posMax;
 
         left = left > 0 ? 0 : left;
         top = top > 0 ? 0 : top;
         left = left < leftMax ? leftMax : left;
         top = top < topMax ? topMax : top;
+
         this._$container.css('transform', 'translate3d('+left+'px, '+top+'px, 0px)');
     }
 
@@ -89,7 +98,7 @@ class Porthole {
     }
 
     _eventMousedown(e) {
-        this.dragging = true;
+        this._dragging = true;
         var [x, y] = this._getXY(e);
         jQuery(document).on(
             'touchmove.'+this._container+
@@ -97,22 +106,22 @@ class Porthole {
             e => {
                 var [xx, yy] = this._getXY(e);
                 this._posSet({
-                    left : xx-x+this.posCur['left'], 
-                    top : yy-y+this.posCur['top']
+                    left : xx-x+this._posCur['left'], 
+                    top : yy-y+this._posCur['top']
                 });
             }
         );
     }
 
     _eventMouseup() {
-        if(this.dragging === true) {
-            this.dragging = false;
-            this.posCur = this._posGet();
+        if(this._dragging === true) {
+            this._dragging = false;
+            this._posCur = this._posGet();
             jQuery(document).off(
                 'touchmove.'+this._container+
                 ' mousemove.'+this._container
             );
-        }
+        };
     }
 
     _eventsBind() {
@@ -136,12 +145,12 @@ class Porthole {
         this._$container.off('.'+this._container);
         jQuery(document).off('.'+this._container);
     }
-}
+};
 
 jQuery.fn.porthole = function(options) {
     options = jQuery.extend({
         start: [0, 0]
     }, options);
 
-    return new Porthole(options, this);
+    return new Porthole(this, options);
 };

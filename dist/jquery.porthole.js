@@ -13,6 +13,10 @@
 })(this, function (exports, _jquery) {
     'use strict';
 
+    Object.defineProperty(exports, '__esModule', {
+        value: true
+    });
+
     var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -24,7 +28,7 @@
     var _jQuery = _interopRequireDefault(_jquery);
 
     var Porthole = (function () {
-        function Porthole(options, viewport) {
+        function Porthole(viewport, options) {
             _classCallCheck(this, Porthole);
 
             this._options = options;
@@ -34,6 +38,16 @@
         }
 
         _createClass(Porthole, [{
+            key: 'getCurrentPos',
+            value: function getCurrentPos() {
+                return this._posCur;
+            }
+        }, {
+            key: 'getInitializedStatus',
+            value: function getInitializedStatus() {
+                return this._initialized;
+            }
+        }, {
             key: 'init',
             value: function init() {
                 if (this._initialized === false) {
@@ -61,9 +75,9 @@
         }, {
             key: '_render',
             value: function _render() {
-                if (this._container == undefined) {
+                if (typeof this._container === 'undefined') {
                     this._$viewport = (0, _jQuery['default'])(this._viewport);
-                    this._container = this._$viewport.attr('id') + '-porthole-wrapper';
+                    this._container = this._$viewport.attr('id') + '-jquery-porthole-wrapper';
                     this._$container = (0, _jQuery['default'])('<div id="' + this._container + '" style="display: inline-block;">' + this._$viewport.html() + '</div>');
                     this._viewportOverflow = this._$viewport.css('overflow');
                     this._$viewport.css('overflow', 'hidden').html(this._$container);
@@ -72,8 +86,8 @@
         }, {
             key: '_renderBack',
             value: function _renderBack() {
-                if (this._container != undefined) {
-                    this._$viewport.html(this._$container.html()).css('overflow', this._containerviewportOverflow);
+                if (typeof this._container !== 'undefined') {
+                    this._$viewport.html(this._$container.html()).css('overflow', this._viewportOverflow);
                     this._container = null;
                     this._$container = null;
                     this._viewportOverflow = null;
@@ -82,15 +96,15 @@
         }, {
             key: '_posInit',
             value: function _posInit() {
-                this.posMax = {
+                this._posMax = {
                     left: this._$viewport.width() - this._$container.width(),
                     top: this._$viewport.height() - this._$container.height()
                 };
-                this.posCur = {
+                this._posCur = {
                     left: -this._options.start[0],
                     top: -this._options.start[1]
                 };
-                this._posSet(this.posCur);
+                this._posSet(this._posCur);
             }
         }, {
             key: '_posGet',
@@ -142,7 +156,7 @@
             value: function _posSet(_ref) {
                 var left = _ref.left;
                 var top = _ref.top;
-                var _posMax = this.posMax;
+                var _posMax = this._posMax;
                 var leftMax = _posMax.left;
                 var topMax = _posMax.top;
 
@@ -150,6 +164,7 @@
                 top = top > 0 ? 0 : top;
                 left = left < leftMax ? leftMax : left;
                 top = top < topMax ? topMax : top;
+
                 this._$container.css('transform', 'translate3d(' + left + 'px, ' + top + 'px, 0px)');
             }
         }, {
@@ -164,7 +179,7 @@
             value: function _eventMousedown(e) {
                 var _this2 = this;
 
-                this.dragging = true;
+                this._dragging = true;
 
                 var _getXY2 = this._getXY(e);
 
@@ -182,19 +197,19 @@
                     var yy = _getXY32[1];
 
                     _this2._posSet({
-                        left: xx - x + _this2.posCur['left'],
-                        top: yy - y + _this2.posCur['top']
+                        left: xx - x + _this2._posCur['left'],
+                        top: yy - y + _this2._posCur['top']
                     });
                 });
             }
         }, {
             key: '_eventMouseup',
             value: function _eventMouseup() {
-                if (this.dragging === true) {
-                    this.dragging = false;
-                    this.posCur = this._posGet();
+                if (this._dragging === true) {
+                    this._dragging = false;
+                    this._posCur = this._posGet();
                     (0, _jQuery['default'])(document).off('touchmove.' + this._container + ' mousemove.' + this._container);
-                }
+                };
             }
         }, {
             key: '_eventsBind',
@@ -219,11 +234,14 @@
         return Porthole;
     })();
 
+    exports.Porthole = Porthole;
+    ;
+
     _jQuery['default'].fn.porthole = function (options) {
         options = _jQuery['default'].extend({
             start: [0, 0]
         }, options);
 
-        return new Porthole(options, this);
+        return new Porthole(this, options);
     };
 });
