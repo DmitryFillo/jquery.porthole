@@ -71,13 +71,11 @@ export class Porthole {
     }
 
     _posGet() {
-        var a = [ for (i of this._$container.css('transform').split(', ').slice(-2)) parseInt(i) ],
-            [left, top] = a;
-
+        var [left, top] = [ for (i of this._$container.css('transform').split(', ').slice(-2)) parseInt(i) ];
         return {
             left : left,
             top : top
-        }
+        };
     }
 
     _posSet({left, top}) {

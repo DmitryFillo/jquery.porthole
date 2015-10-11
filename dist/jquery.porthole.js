@@ -111,8 +111,8 @@
             value: function _posGet() {
                 var _this = this;
 
-                var a = (function () {
-                    var _a = [];
+                var _ref2 = (function () {
+                    var _ref = [];
                     var _iteratorNormalCompletion = true;
                     var _didIteratorError = false;
                     var _iteratorError = undefined;
@@ -121,7 +121,7 @@
                         for (var _iterator = _this._$container.css('transform').split(', ').slice(-2)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                             var i = _step.value;
 
-                            _a.push(parseInt(i));
+                            _ref.push(parseInt(i));
                         }
                     } catch (err) {
                         _didIteratorError = true;
@@ -138,13 +138,13 @@
                         }
                     }
 
-                    return _a;
+                    return _ref;
                 })();
 
-                var _a2 = _slicedToArray(a, 2);
+                var _ref22 = _slicedToArray(_ref2, 2);
 
-                var left = _a2[0];
-                var top = _a2[1];
+                var left = _ref22[0];
+                var top = _ref22[1];
 
                 return {
                     left: left,
@@ -153,9 +153,9 @@
             }
         }, {
             key: '_posSet',
-            value: function _posSet(_ref) {
-                var left = _ref.left;
-                var top = _ref.top;
+            value: function _posSet(_ref3) {
+                var left = _ref3.left;
+                var top = _ref3.top;
                 var _posMax = this._posMax;
                 var leftMax = _posMax.left;
                 var topMax = _posMax.top;
