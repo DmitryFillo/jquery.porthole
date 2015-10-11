@@ -9,8 +9,8 @@
   "main": "dist/jquery.porthole.js",
   "moduleType": [
     "amd",
-    "globals",
-    "node"
+    "node",
+    "globals"
   ],
   "keywords": [
     "porthole",
