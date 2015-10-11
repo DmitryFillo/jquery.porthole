@@ -1,3 +1,4 @@
 -- write good/full readme
 -- npm (?)
 -- remove callback from demos
+-- https://github.com/DmitryFillo/jquery.porthole/blob/master/src/jquery.porthole.es6#L74 - fix it
