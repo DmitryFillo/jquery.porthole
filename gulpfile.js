@@ -6,15 +6,15 @@ var rename = require('gulp-rename');
 var babelConf = {
     modules : 'umd',
     optional : 'es7.comprehensions'
-}
+};
 
-var srcDir = 'src'
-var distDir = 'dist'
+var srcDir = 'src';
+var distDir = 'dist';
 
-var baseFile = 'jquery.porthole'
-var srcFile = baseFile+'.es6'
-var distFile = baseFile+'.js'
-var minFile = baseFile+'.min.js'
+var baseFile = 'jquery.porthole';
+var srcFile = baseFile+'.es6';
+var distFile = baseFile+'.js';
+var minFile = baseFile+'.min.js';
 
 gulp.task('compile', function () {
     gulp.src(srcDir+'/'+srcFile)
