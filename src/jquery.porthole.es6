@@ -99,7 +99,7 @@ export class Porthole {
 
     _eventMousedown(e) {
         this._dragging = true;
-        var [x, y] = this._getPointerXY(e),
+        var [x, y] = this._getPointerXY(e);
 
         jQuery(document).on(
             this._dragEventName,

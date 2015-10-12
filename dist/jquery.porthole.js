@@ -190,7 +190,7 @@
                 var x = _getPointerXY22[0];
                 var y = _getPointerXY22[1];
 
-                (0, _jQuery['default'])(document).on('touchmove.' + this._container + ' mousemove.' + this._container, function (e) {
+                (0, _jQuery['default'])(document).on(this._dragEventName, function (e) {
                     var _getPointerXY3 = _this2._getPointerXY(e);
 
                     var _getPointerXY32 = _slicedToArray(_getPointerXY3, 2);
@@ -218,8 +218,7 @@
                 if (this._dragging === true) {
                     this._dragging = false;
                     this._posLast = this._posGet();
-
-                    (0, _jQuery['default'])(document).off('touchmove.' + this._container + ' mousemove.' + this._container);
+                    (0, _jQuery['default'])(document).off(this._dragEventName);
 
                     if (typeof this.options.onDragStop !== 'undefined') {
                         this.options.onDragStop(this);
@@ -231,14 +230,14 @@
             value: function _eventsBind() {
                 var _this3 = this;
 
-                var dragStartEvent = 'touchstart.' + this._container + ' mousedown.' + this._container,
-                    dragStopEvent = 'touchend.' + this._container + ' mouseup.' + this._container;
-                console.log(dragStopEvent);
+                this._dragStartEventName = 'touchstart.' + this._container + ' mousedown.' + this._container;
+                this._dragStopEventName = 'touchend.' + this._container + ' mouseup.' + this._container;
+                this._dragEventName = 'touchmove.' + this._container + ' mousemove.' + this._container;
 
-                this._$container.on(dragStartEvent, function (e) {
+                this._$container.on(this._dragStartEventName, function (e) {
                     _this3._eventMousedown(e);
                 });
-                (0, _jQuery['default'])(document).on(dragStopEvent, function () {
+                (0, _jQuery['default'])(document).on(this._dragStopEventName, function () {
                     _this3._eventMouseup();
                 });
             }
