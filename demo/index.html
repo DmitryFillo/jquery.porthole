@@ -72,7 +72,7 @@
         <a href="#" id="show-status">Show controls and features</a>
         <div id="status">
             <p>
-                <em>You can use window.Porthole to access to the porthole object from the console</em>
+                <em>You can use window.porthole to access to the porthole object from the console</em>
             </p>
             <table>
                 <thead>
@@ -115,7 +115,7 @@
                     $('.init-status').text(JSON.stringify(porthole.getStatus()));
                 }
 
-                var P = $('#viewport').porthole({
+                var porthole = $('#viewport').porthole({
                     posStart : [334, 97],
                     onDragStart : function(o) {
                         onDragCallback(o, '.start-pos');
@@ -127,24 +127,25 @@
                         onDragCallback(o, '.move-pos');
                     }
                 });
-                setStatus(P);
+
+                setStatus(porthole);
 
                 $('.destroy').click(function(e) {
                     e.preventDefault();
-                    P.destroy();
-                    setStatus(P);
+                    porthole.destroy();
+                    setStatus(porthole);
                 });
 
                 $('.init').click(function(e) {
                     e.preventDefault();
-                    P.init();
-                    setStatus(P);
+                    porthole.init();
+                    setStatus(porthole);
                 });
 
                 $('.update').click(function(e) {
                     e.preventDefault();
-                    P.update();
-                    setStatus(P);
+                    porthole.update();
+                    setStatus(porthole);
                 });
 
                 $('#show-status').click(function(e) {
@@ -153,8 +154,7 @@
                     $('#status').css('display', 'block');
                 });
 
-                // global object
-                window.Porthole = P;
+                window.porthole = porthole;
             })(jQuery);
         </script>
     </body>
