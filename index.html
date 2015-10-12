@@ -3,36 +3,159 @@
     <head>
         <meta charset="utf-8">
         <title>jquery.porthole example</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" type="text/css">
         <style>
+            html, body {
+                padding: 0;
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+                font-weight: 400;
+                text-align: center;
+            }
+
+            a {
+                color: #000;
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: darkred;
+            }
+
             #viewport {
                 -webkit-box-shadow: 0px 0px 20px 0px rgba(50, 50, 50, 0.75);
                 -moz-box-shadow: 0px 0px 20px 0px rgba(50, 50, 50, 0.75);
                 box-shadow: 0px 0px 20px 0px rgba(50, 50, 50, 0.75);
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-                width: 500px;
-                height: 500px;
+                width: 450px;
+                height: 450px;
                 cursor: crosshair;
+                margin: auto;
+                margin-top: 30px;
+            }
+
+            #status {
+                text-align: center;
+                display: none;
+            }
+
+            #status .controls {
+                margin-top: 20px;
+            }
+
+            #status .controls a {
+                background: #eee;
+                padding: 10px;
+            }
+
+            #status table {
+                border: 1px solid #000;
+                width: 100%;
+            }
+
+            #status table thead {
+                font-weight: 500;
+            }
+
+            #status table td {
+                border: 1px solid #000;
+                text-align: center;
+                width: 25%;
+            }
+
+            #show-status {
+                margin-top: 20px;
+                display: inline-block;
             }
         </style>
     </head>
     <body>
+        <a href="#" id="show-status">Show controls and features</a>
+        <div id="status">
+            <p>
+                <em>You can use window.porthole to access to the porthole object from the console</em>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Init status</td>
+                        <td>Start position</td>
+                        <td>Stop position</td>
+                        <td>Move position</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="init-status">?</td>
+                        <td class="start-pos">?</td>
+                        <td class="stop-pos">?</td>
+                        <td class="move-pos">?</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="controls">
+                <a class="destroy" href="#">Destroy</a>
+                <a class="init" href="#">Init</a>
+                <a class="update" href="#">Update</a>
+            </div>
+        </div>
         <div id="viewport">
             <div style="background: url(http://bower.io/img/bower-logo.png); width: 1024px; height: 900px;"></div>
         </div>
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script src="jquery.porthole.js"></script>
+        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script src="../dist/jquery.porthole.js"></script>
         <script>
-            var P = $('#viewport').porthole({
-                start : [334, 97],
-                callback: function() {
-                    console.log('loaded');
+            'use strict';
+
+            (function($) {
+                function onDragCallback(porthole, cls) {
+                    $(cls).text(JSON.stringify(porthole.getCurrentPos()));
                 }
-            });
+
+                function setStatus(porthole) {
+                    $('.init-status').text(JSON.stringify(porthole.getStatus()));
+                }
+
+                var porthole = $('#viewport').porthole({
+                    posStart : [334, 97],
+                    onDragStart : function(o) {
+                        onDragCallback(o, '.start-pos');
+                    },
+                    onDragStop : function(o) {
+                        onDragCallback(o, '.stop-pos');
+                    },
+                    onDrag : function(o) {
+                        onDragCallback(o, '.move-pos');
+                    }
+                });
+
+                setStatus(porthole);
+
+                $('.destroy').click(function(e) {
+                    e.preventDefault();
+                    porthole.destroy();
+                    setStatus(porthole);
+                });
+
+                $('.init').click(function(e) {
+                    e.preventDefault();
+                    porthole.init();
+                    setStatus(porthole);
+                });
+
+                $('.update').click(function(e) {
+                    e.preventDefault();
+                    porthole.update();
+                    setStatus(porthole);
+                });
+
+                $('#show-status').click(function(e) {
+                    e.preventDefault();
+                    $(e.currentTarget).remove();
+                    $('#status').css('display', 'block');
+                });
+
+                window.porthole = porthole;
+            })(jQuery);
         </script>
     </body>
 </html>
