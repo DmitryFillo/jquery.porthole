@@ -27,6 +27,7 @@ How to use
 You should include plugin to the page, something like this:
 
 .. code:: html
+
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/jquery.porthole/dist/jquery.Porthole.min.js"></script>
     <script>
@@ -63,7 +64,8 @@ Porthole.options.startPos
 
 Start porthole position coordinates.
 
-.. code: javascript
+.. code:: javascript
+
     var porthole = $('#viewport').porthole({
         startPos: [10, 10]
     });
@@ -80,7 +82,8 @@ Porthole.options.onDrag
 This method will be fired when dragging (mousemove/touchmove) event occurs.
 It takes one argument - porthole object.
 
-.. code: javascript
+.. code:: javascript
+
     var porthole = $('#viewport').porthole({
         onDrag: function(o) {
             /* 
@@ -95,7 +98,8 @@ Porthole.options.onDragStart
 This method will be fired when drag start (mousedown/touchstart) event occurs.
 It takes one argument - porthole object.
 
-.. code: javascript
+.. code:: javascript
+
     var porthole = $('#viewport').porthole({
         onDragStart: function(o) {
             /* 
@@ -110,7 +114,8 @@ Porthole.options.onDragStop
 This method will be fired when drag stop (mouseup/touchend) event occurs.
 It takes one argument - porthole object.
 
-.. code: javascript
+.. code:: javascript
+
     var porthole = $('#viewport').porthole({
         onDragStop: function(o) {
             /* 
@@ -143,7 +148,8 @@ Gets current porthole position. Actually it is css transform coordinates.
 
 Example:
 
-..code: javascript
+.. code:: javascript
+
     Porthole.getCurrentPos();
     /*
         Prints: Object {left: -219, top: -71}
@@ -158,7 +164,8 @@ it's ``true``.
 
 Example:
 
-..code: javascript
+.. code:: javascript
+
     Porthole.getStatus();
     /*
         Prints: Object {initialized: true};
