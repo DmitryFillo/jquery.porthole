@@ -4,7 +4,7 @@ jquery.porthole
 
 Simply and fast viewport plugin for jQuery which using css transforms.
 
-If you have large size content that should be placed to the small viewport,
+If you have large size content that should be placed into the small viewport,
 this plugin is for you.
 
 .. contents::
@@ -24,12 +24,12 @@ The best way::
 How to use
 ==========
 
-You should include plugin to the page, something like this:
+You should include the plugin to the page, something like this:
 
 .. code:: html
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/jquery.porthole/dist/jquery.Porthole.min.js"></script>
+    <script src="bower_components/jquery.porthole/dist/jquery.porthole.min.js"></script>
     <script>
         var porthole = $('#viewport').porthole();
         // ...
@@ -39,10 +39,10 @@ You should include plugin to the page, something like this:
 you should have no problems with this plugin. Also it supports AMD/RequireJS, CommonJS, ES6 modules
 (and, of course, globals).*
 
-Porthole API
-============
+API
+===
 
-Porthole object has ``options`` property which is object with:
+Porthole object has ``options`` property which is an object with:
 
 + startPos
 + onDrag
@@ -59,10 +59,10 @@ Also porthole object has methods:
 + getCurrentPos
 + getStatus
 
-Porthole.options.startPos
+porthole.options.startPos
 -------------------------
 
-Start porthole position coordinates.
+Start position coordinates.
 
 .. code:: javascript
 
@@ -70,78 +70,75 @@ Start porthole position coordinates.
         startPos: [10, 10]
     });
 
-    // Or directly to the options object and update porthole (see below about update).
+    // Or attach directly to the options object and update porthole (see info below about update)
     porthole.options.startPos = [10, 20];
     porthole.update();
 
 Default is ``[0, 0]``.
 
-Porthole.options.onDrag
+porthole.options.onDrag
 -----------------------
 
 This method will be fired when dragging (mousemove/touchmove) event occurs.
-It takes one argument - porthole object.
 
 .. code:: javascript
 
     var porthole = $('#viewport').porthole({
         onDrag: function(o) {
             /* 
-                o is porthole object.
+                o is the porthole object.
             */ 
         }
     });
 
-Porthole.options.onDragStart
+porthole.options.onDragStart
 ----------------------------
 
 This method will be fired when drag start (mousedown/touchstart) event occurs.
-It takes one argument - porthole object.
 
 .. code:: javascript
 
     var porthole = $('#viewport').porthole({
         onDragStart: function(o) {
             /* 
-                o is porthole object.
+                o is the porthole object.
             */ 
         }
     });
 
-Porthole.options.onDragStop
+porthole.options.onDragStop
 ---------------------------
 
 This method will be fired when drag stop (mouseup/touchend) event occurs.
-It takes one argument - porthole object.
 
 .. code:: javascript
 
     var porthole = $('#viewport').porthole({
         onDragStop: function(o) {
             /* 
-                o is porthole object.
+                o is the porthole object.
             */ 
         }
     });
 
-Porthole.destroy
+porthole.destroy
 ----------------
 
-Destroy method. You can use it for destroy porthole and render back to the initial state.
+Destroy method. You can use it for destroy the porthole and render back to the initial state.
 
-Porthole.init
+porthole.init
 -------------
 
 Initialization method. Automatically fires in the constructor. You can use it for
-manually init after destroy.
+manual init after destroy.
 
-Porthole.update
+porthole.update
 ---------------
 
-Update method. Useful for update porthole after options change. Simply fires
+Update method. Useful for update the porthole after options change. Simply fires
 ``destroy()`` first and ``init()`` after.
 
-Porthole.getCurrentPos
+porthole.getCurrentPos
 ----------------------
 
 Gets current porthole position. Actually it is css transform coordinates.
@@ -150,37 +147,37 @@ Example:
 
 .. code:: javascript
 
-    Porthole.getCurrentPos();
+    porthole.getCurrentPos();
     /*
-        Prints: Object {left: -219, top: -71}
+        Example: Object {left: -219, top: -71}
     */
 
-Porthole.getStatus
+porthole.getStatus
 ------------------
 
-Gets current porthole status. Returns object with status properties. There are
-only one status property - ``initialized`` property. It's ``false`` after ``destroy()``, otherwise
-it's ``true``.
+Gets current porthole status. Returns object with status properties. There are:
+
++ initialized (it's ``false`` after ``destroy()``, otherwise it's ``true``)
 
 Example:
 
 .. code:: javascript
 
-    Porthole.getStatus();
+    porthole.getStatus();
     /*
         Prints: Object {initialized: true};
     */
 
-    Porthole.destroy();
+    porthole.destroy();
 
-    Porthole.getStatus();
+    porthole.getStatus();
     /*
         Prints: Object {initialized: false};
     */
 
-    Porthole.update();
+    porthole.update();
 
-    Porthole.getStatus();
+    porthole.getStatus();
     /*
         Prints: Object {initialized: true};
     */
