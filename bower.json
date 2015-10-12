@@ -9,6 +9,7 @@
   "moduleType": [
     "amd",
     "node",
+    "es6",
     "globals"
   ],
   "keywords": [
